@@ -1,7 +1,7 @@
 import pandas as pd
 import csv
 from datetime import datetime
-from data_entry import get_date, get_amount, get_category, get_description
+from data_entry import DATE_FORMAT, get_date, get_amount, get_category, get_description
 
 class CSV:
     CSV_FILE = "finance_data.csv"
@@ -31,7 +31,41 @@ class CSV:
             writer.writerow(new_entry)
         print("Entry added successfully!")
 
+    @classmethod
+    def get_transactions(cls, start_date, end_date):
+        df = pd.read_csv(cls.CSV_FILE)
+        # Convert the data to a datetime object
+        df["date"] = pd.to_datetime(df["date"], format=DATE_FORMAT)
+        start_date = datetime.strptime(start_date, DATE_FORMAT)
+        end_date = datetime.strptime(end_date, DATE_FORMAT)
 
+        # Create a mask to filter for transactions between the two dates
+        mask = (df["date"] >= start_date) & (df["date"] <= end_date)
+        filtered_df = df.loc[mask]
+
+        if filtered_df.empty:
+            print("No transactions found for the given date range.")
+            return
+        else:
+            print(
+                f"Transactions from {start_date.strftime(DATE_FORMAT)} to {end_date.strftime(DATE_FORMAT)}"
+            )
+            print(
+                filtered_df.to_string(index=False, formatters={
+                    "date": lambda x: x.strftime(DATE_FORMAT),
+                    "amount": lambda x: f"{x:.2f}"
+                })
+            )
+
+            total_income = filtered_df[filtered_df["category"] == "Income"]["amount"].sum()
+            total_expense = filtered_df[filtered_df["category"] == "Expense"]["amount"].sum()
+            print("----------")
+            print(f"Total Income: £{total_income:.2f}")
+            print(f"Total Expense: £{total_expense:.2f}")
+            print(f"Net Savings: £{(total_income - total_expense):.2f}")
+            return filtered_df
+            
+            
 def add():
     CSV.initialise_csv()
     date = get_date("Enter the date of transaction (dd/mm/yyyy) or enter for today's date: ",
@@ -42,5 +76,5 @@ def add():
     desciption = get_description()
     CSV.add_entry(date, amount, category, desciption)
 
-
+CSV.get_transactions("01/01/2021", "16/03/2025")
 add()
