@@ -1,4 +1,8 @@
 date,amount,category,description
 13/03/2025,9.6,Expense,Food
-16/03/2025,2.0,Expense,test 1
-16/03/2025,5.0,Income,Test 2
+13/03/2025,5.0,Income,Test 
+14/03/2025,2.0,Expense,test 12
+14/03/2025,4.0,Expense,test 3
+14/03/2025,1.0,Income,test 4
+16/03/2025,10.0,Income,test 5
+16/03/2025,8.0,Expense,test 5
